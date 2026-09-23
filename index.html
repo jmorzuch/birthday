@@ -38,28 +38,34 @@ body{
   92%{opacity:.55}
   100%{transform:translateY(-110vh) rotate(320deg);opacity:0}
 }
-.stage{position:relative;z-index:1;width:min(560px,100%);display:flex;flex-direction:column;gap:14px;align-items:center}
+.stage{position:relative;z-index:1;width:min(420px,100%);display:flex;flex-direction:column;gap:12px;align-items:center}
 .card{
   background:var(--card);
   border:2px solid #e8d9bf;
   border-radius:20px;
   box-shadow:0 18px 40px rgba(90,60,20,.14), 0 2px 0 rgba(255,255,255,.8) inset;
   width:100%;
-  padding:14px;
+  padding:12px;
 }
 .topbar{
   width:100%;
-  display:flex;align-items:center;justify-content:space-between;gap:10px;
-  flex-wrap:wrap;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
 }
-.brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:15px}
-.brand .dot{width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(255,159,67,.25)}
-.hud{display:flex;align-items:center;gap:10px}
-.steps{font-variant-numeric:tabular-nums;font-weight:600;font-size:14px;color:#8a7458;background:#f3e8d2;padding:5px 12px;border-radius:999px}
+.brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;flex:none}
+.brand .dot{width:11px;height:11px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(255,159,67,.25)}
+.hud{display:flex;align-items:center;gap:6px;min-width:0}
+.chip{
+  font-variant-numeric:tabular-nums;font-weight:700;font-size:13px;
+  color:#8a7458;background:#f3e8d2;padding:4px 10px;border-radius:999px;
+  display:inline-flex;align-items:center;gap:6px;white-space:nowrap;
+}
+.chip .legico{font-size:15px}
+.hearts{color:#ff6b6b;letter-spacing:1px}
+.hearts .off{color:#e8d9bf}
 .btn{
   border:2px solid #e0cfae;background:#fff8ec;color:var(--ink);
-  font:inherit;font-weight:700;font-size:14px;
-  padding:8px 16px;border-radius:999px;cursor:pointer;
+  font:inherit;font-weight:700;font-size:13px;
+  padding:6px 12px;border-radius:999px;cursor:pointer;flex:none;
   transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
 }
 .btn:hover{transform:translateY(-1px);box-shadow:0 6px 14px rgba(120,80,20,.15)}
@@ -72,10 +78,11 @@ canvas{
   display:block;
   max-width:100%;height:auto;
   border-radius:14px;
+  touch-action:manipulation;
   box-shadow:0 10px 24px rgba(80,50,10,.10) inset, 0 4px 10px rgba(80,50,10,.12);
 }
 .toast{
-  position:absolute;left:50%;top:14px;transform:translateX(-50%) translateY(-8px);
+  position:absolute;left:50%;top:16px;transform:translateX(-50%) translateY(-8px);
   background:var(--ink);color:#fff8ec;
   font-weight:700;font-size:14px;letter-spacing:.02em;
   padding:9px 18px;border-radius:999px;
@@ -93,52 +100,54 @@ canvas{
 .overlay{
   position:absolute;inset:0;z-index:10;
   border-radius:14px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
-  text-align:center;padding:26px 20px;
-  background:rgba(255,250,240,.94);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  text-align:center;padding:24px 18px;
+  background:rgba(255,250,240,.95);
   backdrop-filter:blur(6px);
-  transition:opacity .4s ease;
+  transition:opacity .35s ease;
 }
 .overlay.hidden{opacity:0;pointer-events:none}
-.overlay h1{font-size:clamp(26px,6vw,40px);font-weight:800;letter-spacing:-.02em;line-height:1.1}
-.overlay .sub{font-size:15px;color:#8a7458;max-width:40ch;line-height:1.55}
-.story{display:flex;flex-direction:column;gap:10px;align-items:center;margin:4px 0 8px}
+.overlay h1{font-size:clamp(24px,7vw,34px);font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.overlay .sub{font-size:14.5px;color:#8a7458;max-width:42ch;line-height:1.55}
+.story{display:flex;flex-direction:column;gap:8px;align-items:center;margin:2px 0 6px;width:100%}
 .story .step{
-  display:flex;align-items:center;gap:12px;
+  display:flex;align-items:center;gap:11px;
   background:#fff;border:2px solid #ecdcbd;border-radius:14px;
-  padding:9px 16px;font-weight:600;font-size:14.5px;
+  padding:8px 14px;font-weight:600;font-size:14px;
+  width:100%;max-width:320px;
 }
-.story .step .ico{font-size:22px}
+.story .step .ico{font-size:21px}
 .story .step .n{
-  width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;
-  display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex:none;
+  width:21px;height:21px;border-radius:50%;background:var(--accent);color:#fff;
+  display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex:none;margin-left:auto;
 }
+.diffrow{display:flex;flex-direction:column;gap:9px;width:100%;max-width:320px}
+.diffbtn{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  border:2px solid #e0cfae;background:#fff;color:var(--ink);
+  font:inherit;font-weight:800;font-size:16px;
+  padding:12px 16px;border-radius:14px;cursor:pointer;
+  transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+}
+.diffbtn small{font-weight:600;font-size:12.5px;color:#9b8465}
+.diffbtn:hover{transform:translateY(-1px);border-color:var(--accent);box-shadow:0 6px 14px rgba(255,159,67,.25)}
+.diffbtn:active{transform:translateY(1px)}
+.diffbtn .stars{letter-spacing:2px;color:var(--accent);font-size:13px}
 .win h1{background:linear-gradient(90deg,#ff9f43,#ff7eb6 55%,#2ec4b6);-webkit-background-clip:text;background-clip:text;color:transparent}
-.win .gq{font-size:19px;font-weight:700;color:var(--ink);margin-top:2px}
-.win .gb{font-size:12.5px;color:#a08a6c;margin-top:-8px}
-.cake{font-size:52px;animation:bob 1.6s ease-in-out infinite}
+.win .gq{font-size:18px;font-weight:700;color:var(--ink)}
+.cake{font-size:50px;animation:bob 1.6s ease-in-out infinite}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-/* d-pad (touch) — in-flow, centered below the board so it never covers the maze */
-.dpad{
-  margin:2px auto 0;
-  display:grid;grid-template-columns:repeat(3,58px);grid-template-rows:repeat(3,58px);
-  gap:7px;
-}
-.dpad button{
+.tapbtn{
+  margin-top:2px;
+  width:100%;max-width:320px;
   border:none;border-radius:16px;
-  background:#fff;
-  border:2px solid #e0cfae;
-  font-size:22px;font-weight:800;color:#8a6d43;
-  cursor:pointer;touch-action:none;
-  box-shadow:0 3px 0 #d8c39a;
+  background:var(--accent);color:#fff;
+  font:inherit;font-weight:800;font-size:16px;
+  padding:13px 18px;cursor:pointer;touch-action:manipulation;
+  box-shadow:0 5px 0 var(--accent-deep);
   user-select:none;-webkit-user-select:none;
 }
-.dpad button:active{transform:translateY(2px);box-shadow:0 1px 0 #d8c39a;background:#fff3dd}
-.dpad .up{grid-column:2;grid-row:1}
-.dpad .left{grid-column:1;grid-row:2}
-.dpad .down{grid-column:2;grid-row:3}
-.dpad .right{grid-column:3;grid-row:2}
-@media (hover:hover) and (pointer:fine){ .dpad{display:none} }
+.tapbtn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--accent-deep)}
 </style>
 </head>
 <body>
@@ -146,385 +155,470 @@ canvas{
 
 <main class="stage">
   <header class="topbar">
-    <div class="brand"><span class="dot"></span> Chloe's Big Day</div>
+    <div class="brand"><span class="dot"></span> Ken's Big Day</div>
     <div class="hud">
-      <span class="steps" id="steps">steps: 0</span>
-      <button class="btn" id="resetBtn" type="button">↻ Restart</button>
+      <span class="chip"><span class="legico" id="hudLegIco">👶</span><span id="hudProgress">0/5</span></span>
+      <span class="chip hearts" id="hudHearts" title="lives">♥♥♥</span>
+      <button class="btn" id="menuBtn" type="button">Menu</button>
     </div>
   </header>
 
   <section class="card canvas-wrap">
-    <canvas id="game" width="304" height="364"></canvas>
+    <canvas id="game" width="360" height="540"></canvas>
 
     <div class="toast" id="toast"></div>
 
-    <!-- intro -->
-    <div class="overlay" id="intro">
-      <div style="font-size:44px">🎂</div>
+    <!-- menu -->
+    <div class="overlay" id="menu">
+      <div style="font-size:42px">🎂</div>
       <h1>Ken's Big Day</h1>
-      <p class="sub">One last errand run before the party. You've got this, Dad.</p>
+      <p class="sub">A flappy errand run for the birthday boy. Tap (or press space) to flap — dodge the gift stacks!</p>
       <div class="story">
-        <div class="step"><span class="ico">👶</span><span>Reach <b>Chloe</b> &amp; get her to the RV</span><span class="n">1</span></div>
-        <div class="step"><span class="ico">🚐</span><span>Patch the <b>RV</b> — it's got a flat</span><span class="n">2</span></div>
-        <div class="step"><span class="ico">⭐</span><span>Make it to the <b>finish line</b></span><span class="n">3</span></div>
+        <div class="step"><span class="ico">👶</span><span>Rescue <b>Chloe</b></span><span class="n">1</span></div>
+        <div class="step"><span class="ico">🚐</span><span>Repair the <b>RV</b></span><span class="n">2</span></div>
+        <div class="step"><span class="ico">🏁</span><span>Reach the <b>finish</b></span><span class="n">3</span></div>
       </div>
-      <button class="btn btn-primary" id="startBtn" type="button" style="font-size:17px;padding:12px 34px">Start the day →</button>
-      <p class="sub" style="font-size:12.5px">Arrow keys / WASD to move</p>
+      <div class="diffrow">
+        <button class="diffbtn" data-diff="easy" type="button"><span>Easy</span><span><small>5 stops per leg</small> <span class="stars">★</span></span></button>
+        <button class="diffbtn" data-diff="medium" type="button"><span>Medium</span><span><small>10 stops per leg</small> <span class="stars">★★</span></span></button>
+        <button class="diffbtn" data-diff="hard" type="button"><span>Hard</span><span><small>20 stops per leg</small> <span class="stars">★★★</span></span></button>
+      </div>
+      <p class="sub" style="font-size:12.5px">3 hearts — each bump costs one. Good luck, Ken!</p>
+    </div>
+
+    <!-- crashed -->
+    <div class="overlay hidden" id="crash">
+      <div style="font-size:44px">😵</div>
+      <h1>Whoops!</h1>
+      <p class="sub">The birthday boy got a little wobbly. One more try — you've got this!</p>
+      <button class="tapbtn" id="retryBtn" type="button">Try again ↻</button>
+      <button class="btn" id="changeBtn" type="button">Change difficulty</button>
     </div>
 
     <!-- win -->
     <div class="overlay hidden win" id="win">
       <div class="cake">🎂</div>
       <h1>You made it!</h1>
-      <div>
-        <p class="gq">"But did you think of The Game?"</p>
-      </div>
+      <p class="gq">"But did you think of The Game?"</p>
       <h1>HAPPY BIRTHDAY!</h1>
-      <p class="sub" id="winSteps"></p>
-      <button class="btn btn-primary" id="replayBtn" type="button" style="font-size:16px;padding:11px 30px">Play again ↻</button>
+      <p class="sub" id="winStats"></p>
+      <button class="tapbtn" id="replayBtn" type="button">Play again ↻</button>
     </div>
   </section>
 
-  <p class="foot">Arrow keys or <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> to move (tap the arrows on your phone) &middot; reach <b>Chloe 👶</b>, patch the <b>RV 🚐</b>, then the <b>star ⭐</b></p>
-
-  <div class="dpad" id="dpad" aria-label="movement">
-    <button class="up" data-dir="up" type="button" aria-label="up">▲</button>
-    <button class="left" data-dir="left" type="button" aria-label="left">◀</button>
-    <button class="down" data-dir="down" type="button" aria-label="down">▼</button>
-    <button class="right" data-dir="right" type="button" aria-label="right">▶</button>
-  </div>
+  <p class="foot">Tap anywhere (or <kbd>Space</kbd> / <kbd>↑</kbd> / <kbd>W</kbd>) to flap &middot; <b>Chloe 👶</b> → <b>RV 🚐</b> → <b>finish 🏁</b></p>
 </main>
 
 <script>
 "use strict";
-/* ============================== data ============================== */
-const MAZE = [
-"###################",
-"#.......#.....#...#",
-"#######.#.#.#.###.#",
-"#.....#.#.#.#.....#",
-"#.#####.#.#.#####.#",
-"#.#.....#.#.....#.#",
-"#.#.#########.#.###",
-"#...#.......#.#...#",
-"#.#######.#.#####.#",
-"#.....#...#.....#.#",
-"#####.#.#######.#.#",
-"#.......#.........#",
-"###################",
+/* ============================== config ============================== */
+const W = 360, H = 540, GROUND = 26;
+const PW = 58;                 // pipe width
+const PLAYER_X = 92, PLAYER_R = 13;
+const PHYS = { g: 1350, flap: -395 };
+const LEVELS = {
+  easy:   { n: 5,  gap: 195, speed: 150, spacing: 310 },
+  medium: { n: 10, gap: 165, speed: 180, spacing: 285 },
+  hard:   { n: 20, gap: 140, speed: 212, spacing: 262 },
+};
+const LEGS = [
+  { ico: "👶", name: "Rescue Chloe", done: "Chloe rescued — all buckled in! 💛", pipe: "#ff9ecb", pipeDark: "#e877ab" },
+  { ico: "🚐", name: "Repair the RV", done: "RV patched — back on the road! 🚐", pipe: "#5fd6ca", pipeDark: "#35b3a7" },
+  { ico: "🏁", name: "Reach the finish", done: "You made it!", pipe: "#ffc46b", pipeDark: "#eda53a" },
 ];
-const H = MAZE.length, W = MAZE[0].length;
-const CELL = 16;
-const START = {r:1, c:1};
-const CHECKS = [
-  {r:6,  c:3,  ico:"👶", done:"Chloe's all buckled in! 💛"},
-  {r:9,  c:8,  ico:"🔧", done:"RV patched — back on the road! 🚐"},
-  {r:11, c:17, ico:"⭐", done:"You made it!"},
-];
+const MAX_HEARTS = 3;
 
 /* ============================== state ============================== */
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
-const $steps = document.getElementById("steps");
-const $toast = document.getElementById("toast");
-const $intro = document.getElementById("intro");
-const $win = document.getElementById("win");
-const $winSteps = document.getElementById("winSteps");
+const $ = id => document.getElementById(id);
+const $menu = $("menu"), $crash = $("crash"), $win = $("win");
+const $toast = $("toast"), $winStats = $("winStats");
+const $hudLegIco = $("hudLegIco"), $hudProgress = $("hudProgress"), $hudHearts = $("hudHearts");
 
-let state = "intro";           // intro | playing | won
-let pos, steps, checkpoint, toastTimer = 0, winAt = 0;
+let state = "menu";            // menu | playing | crashed | won
+let diff = "easy";
+let leg = 0, passed = 0, totalPassed = 0, hearts = MAX_HEARTS;
+let player = { y: H / 2, vy: 0 };
+let pipes = [];
+let invulnUntil = 0;
+let cloudOff = 0;
+let toastTimer = 0;
 let confetti = [];
-let prev = {r:START.r, c:START.c};
+let runStartAt = 0;
 
-function reset(){
-  pos = {r:START.r, c:START.c};
-  prev = {r:START.r, c:START.c};
-  steps = 0; checkpoint = 0;
-  confetti = [];
-  $steps.textContent = "steps: 0";
+const cfg = () => LEVELS[diff];
+
+function updateHud(){
+  const L = LEGS[Math.min(leg, LEGS.length - 1)];
+  $hudLegIco.textContent = L.ico;
+  $hudProgress.textContent = state === "won" ? "done!" : (passed + "/" + cfg().n);
+  let h = "";
+  for(let i = 0; i < MAX_HEARTS; i++) h += i < hearts ? "♥" : '<span class="off">♥</span>';
+  $hudHearts.innerHTML = h;
 }
-reset();
-
-/* ============================== input ============================== */
-const DIRS = {
-  up:{dr:-1,dc:0}, down:{dr:1,dc:0}, left:{dr:0,dc:-1}, right:{dr:0,dc:1},
-};
-var moveInterval = 130; // ms between steps (testable)
-let lastMove = 0;
-let held = null;
-
-function tryMove(dr, dc){
-  if(window.__dbg) window.__dbg.push({dr,dc,reason:"state:"+state});
-  if(state !== "playing") return;
-  const now = performance.now();
-  if(now - lastMove < moveInterval){ if(window.__dbg) window.__dbg.push({dr,dc,reason:"throttle now="+Math.round(now)+" last="+lastMove+" iv="+moveInterval}); return; }
-  const nr = pos.r + dr, nc = pos.c + dc;
-  if(nr < 0 || nr >= H || nc < 0 || nc >= W){ if(window.__dbg) window.__dbg.push({dr,dc,reason:"oob "+nr+","+nc}); return; }
-  if(MAZE[nr][nc] === "#"){ if(window.__dbg) window.__dbg.push({dr,dc,reason:"wall "+nr+","+nc}); return; }
-  prev = {r:pos.r, c:pos.c};
-  pos = {r:nr, c:nc};
-  steps++;
-  lastMove = now;
-  if(window.__dbg) window.__dbg.push({dr,dc,ok:true,to:[nr,nc]});
-  $steps.textContent = "steps: " + steps;
-  checkCell();
-}
-window.__tryMove = tryMove; // test hooks (also handy for debugging)
-window.__test_maze = () => MAZE;
-window.__state = () => state;
-window.__steps = () => steps;
-window.__setThrottle = (ms) => { moveInterval = ms; };
-window.__pos = () => [pos.r, pos.c];
-window.__setPos = (r, c) => { pos = {r:r, c:c}; };
-window.__ver = "v3";
-
-function checkCell(){
-  const ch = CHECKS[checkpoint];
-  if(!ch) return;
-  if(pos.r === ch.r && pos.c === ch.c){
-    checkpoint++;
-    if(checkpoint >= CHECKS.length){
-      win();
-    }else{
-      showToast(ch.done);
-      beep(660, .09); setTimeout(()=>beep(880,.1), 90);
-    }
-  }
-}
-window.__checkpoint = () => checkpoint;
-
-/* ============================== win / toast ============================== */
-function win(){
-  state = "won";
-  winAt = performance.now();
-  $winSteps.textContent = "finished in " + steps + " steps";
-  $win.classList.remove("hidden");
-  burstConfetti();
-  beep(523,.12); setTimeout(()=>beep(659,.12),120); setTimeout(()=>beep(784,.18),240);
-}
-window.__won = () => state === "won";
 
 function showToast(msg){
   $toast.textContent = msg;
   $toast.classList.add("show");
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>$toast.classList.remove("show"), 2100);
+  toastTimer = setTimeout(() => $toast.classList.remove("show"), 2100);
 }
 
+/* ============================== run control ============================== */
+function startRun(d){
+  diff = d;
+  leg = 0; passed = 0; totalPassed = 0; hearts = MAX_HEARTS;
+  player = { y: H / 2, vy: 0 };
+  pipes = [];
+  invulnUntil = 0;
+  confetti = [];
+  runStartAt = performance.now();
+  $menu.classList.add("hidden");
+  $crash.classList.add("hidden");
+  $win.classList.add("hidden");
+  state = "playing";
+  updateHud();
+}
+window.__start = startRun; // test hooks
+window.__state = () => state;
+window.__hearts = () => hearts;
+window.__leg = () => leg;
+window.__passed = () => passed;
+window.__won = () => state === "won";
+window.__crashed = () => state === "crashed";
+window.__flap = () => flap();
+window.__forceHit = () => hit(true);
+window.__cfg = () => LEVELS[diff];
+window.__step = (dt) => { update(dt); checkCollisions(); };
+window.__setY = (y) => { player.y = y; player.vy = 0; };
+window.__noHit = () => { invulnUntil = performance.now() + 1e9; };
+window.__totalPassed = () => totalPassed;
+window.__gaps = () => pipes.map(p => ({ x: p.x, gapY: p.gapY, passed: p.passed }));
+
+function toMenu(){
+  state = "menu";
+  $crash.classList.add("hidden");
+  $win.classList.add("hidden");
+  $menu.classList.remove("hidden");
+}
+
+function legComplete(){
+  const L = LEGS[leg];
+  leg++;
+  passed = 0;
+  if(leg >= LEGS.length){
+    win();
+  }else{
+    showToast(L.done);
+    beep(660, .09); setTimeout(() => beep(880, .1), 90);
+    updateHud();
+  }
+}
+
+function win(){
+  state = "won";
+  const secs = Math.max(1, Math.round((performance.now() - runStartAt) / 1000));
+  $winStats.textContent = diff + " mode · " + totalPassed + " gift stacks cleared · " + secs + "s — Chloe and the RV thank you!";
+  $win.classList.remove("hidden");
+  burstConfetti();
+  updateHud();
+  beep(523, .12); setTimeout(() => beep(659, .12), 120); setTimeout(() => beep(784, .18), 240);
+}
+
+/* ============================== game logic ============================== */
+function flap(){
+  if(state !== "playing") return;
+  player.vy = PHYS.flap;
+  beep(520, .05);
+}
+
+function newPipe(x){
+  const c = cfg();
+  const minC = 64 + c.gap / 2;
+  const maxC = H - GROUND - 40 - c.gap / 2;
+  const gapY = minC + Math.random() * (maxC - minC);
+  return { x, gapY, passed: false, legAtSpawn: leg };
+}
+
+function update(dt){
+  if(state !== "playing") return;
+  const c = cfg();
+  const now = performance.now();
+
+  // player physics
+  player.vy += PHYS.g * dt;
+  player.y += player.vy * dt;
+
+  // ceiling: soft clamp (no penalty)
+  if(player.y < PLAYER_R){ player.y = PLAYER_R; player.vy = Math.max(0, player.vy); }
+  // ground: bump (costs a heart), bounce back
+  if(player.y > H - GROUND - PLAYER_R){
+    if(now >= invulnUntil){ hit(false); }
+    player.y = H - GROUND - PLAYER_R;
+    player.vy = -260;
+  }
+
+  // pipes scroll
+  cloudOff += c.speed * dt * 0.35;
+  for(const p of pipes) p.x -= c.speed * dt;
+
+  // spawn
+  let guard = 0;
+  while(guard++ < 3){
+    const last = pipes[pipes.length - 1];
+    if(!last){ pipes.push(newPipe(W + 200)); break; }
+    if(last.x < W - c.spacing) pipes.push(newPipe(last.x + c.spacing));
+    else break;
+  }
+  pipes = pipes.filter(p => p.x > -PW - 20);
+
+  // pass detection
+  for(const p of pipes){
+    if(!p.passed && p.x + PW < PLAYER_X - PLAYER_R){
+      p.passed = true;
+      passed++; totalPassed++;
+      beep(740, .06);
+      if(passed >= cfg().n) legComplete();
+      else updateHud();
+    }
+  }
+}
+
+function hit(force){
+  const now = performance.now();
+  if(!force && now < invulnUntil) return;
+  hearts--;
+  invulnUntil = now + 1200;
+  updateHud();
+  if(hearts <= 0){
+    state = "crashed";
+    $crash.classList.remove("hidden");
+    beep(180, .2); setTimeout(() => beep(120, .3), 160);
+  }else{
+    showToast(hearts === 1 ? "Careful — 1 heart left! ❤️" : "Ouch! Keep going 💪");
+    beep(220, .12);
+  }
+}
+
+function circleRect(cx, cy, r, rx, ry, rw, rh){
+  const nx = Math.max(rx, Math.min(cx, rx + rw));
+  const ny = Math.max(ry, Math.min(cy, ry + rh));
+  const dx = cx - nx, dy = cy - ny;
+  return dx * dx + dy * dy < r * r;
+}
+
+function checkCollisions(){
+  if(state !== "playing") return;
+  if(performance.now() < invulnUntil) return;
+  const gapTop = p => p.gapY - cfg().gap / 2;
+  const gapBot = p => p.gapY + cfg().gap / 2;
+  for(const p of pipes){
+    if(p.x > PLAYER_X + PLAYER_R || p.x + PW < PLAYER_X - PLAYER_R) continue;
+    if(circleRect(PLAYER_X, player.y, PLAYER_R, p.x, -20, PW, gapTop(p) + 20)) return hit(false);
+    if(circleRect(PLAYER_X, player.y, PLAYER_R, p.x, gapBot(p), PW, H - gapBot(p))) return hit(false);
+  }
+}
+
+/* ============================== drawing ============================== */
+function drawPipe(p){
+  const c = cfg();
+  const top = p.gapY - c.gap / 2;
+  const bot = p.gapY + c.gap / 2;
+  const L = LEGS[Math.min(p.legAtSpawn, LEGS.length - 1)];
+  const x = p.x;
+
+  const col = (y0, h) => {
+    if(h <= 0) return;
+    ctx.fillStyle = L.pipe;
+    ctx.fillRect(x, y0, PW, h);
+    // candy stripes
+    ctx.fillStyle = "rgba(255,255,255,.35)";
+    for(let sy = Math.ceil(y0 / 24) * 24; sy < y0 + h; sy += 24)
+      ctx.fillRect(x, sy, PW, 5);
+    // side shade
+    ctx.fillStyle = "rgba(0,0,0,.10)";
+    ctx.fillRect(x, y0, 5, h);
+    ctx.fillStyle = "rgba(255,255,255,.35)";
+    ctx.fillRect(x + PW - 5, y0, 5, h);
+  };
+  col(0, top);
+  col(bot, H - GROUND - bot);
+
+  // caps at gap ends
+  ctx.fillStyle = L.pipeDark;
+  ctx.fillRect(x - 4, top - 12, PW + 8, 12);
+  ctx.fillRect(x - 4, bot, PW + 8, 12);
+  ctx.fillStyle = "rgba(255,255,255,.25)";
+  ctx.fillRect(x - 4, top - 12, PW + 8, 3);
+  ctx.fillRect(x - 4, bot, PW + 8, 3);
+
+  // target icon in the gap
+  ctx.font = "22px 'Segoe UI Emoji','Noto Color Emoji',sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(L.ico, x + PW / 2, p.gapY);
+}
+
+function draw(){
+  const t = performance.now();
+  // sky
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, "#cfeaff");
+  grad.addColorStop(.6, "#ffe9c9");
+  grad.addColorStop(1, "#ffd9a8");
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  // sun
+  ctx.fillStyle = "rgba(255,214,120,.9)";
+  ctx.beginPath(); ctx.arc(W - 58, 64, 30, 0, 7); ctx.fill();
+  ctx.fillStyle = "rgba(255,236,180,.55)";
+  ctx.beginPath(); ctx.arc(W - 58, 64, 42, 0, 7); ctx.fill();
+
+  // clouds (parallax)
+  const cw = 170;
+  for(let i = -1; i < 4; i++){
+    const cx = ((i * cw - (cloudOff % cw)) % (W + cw) + (W + cw)) % (W + cw) - cw / 2;
+    const cy = 70 + (i % 3) * 34;
+    ctx.fillStyle = "rgba(255,255,255,.85)";
+    ctx.beginPath();
+    ctx.arc(cx, cy, 16, 0, 7);
+    ctx.arc(cx + 20, cy - 7, 20, 0, 7);
+    ctx.arc(cx + 42, cy, 15, 0, 7);
+    ctx.fill();
+  }
+
+  // pipes
+  for(const p of pipes) drawPipe(p);
+
+  // ground
+  ctx.fillStyle = "#e7cfa5";
+  ctx.fillRect(0, H - GROUND, W, GROUND);
+  ctx.fillStyle = "#c9a76e";
+  ctx.fillRect(0, H - GROUND, W, 4);
+  ctx.fillStyle = "rgba(120,85,35,.25)";
+  for(let i = -1; i < 12; i++){
+    const gx = (i * 34 - (cloudOff * 1.0) % 34);
+    ctx.fillRect(gx, H - GROUND + 12, 18, 3);
+  }
+
+  // player (dad)
+  const blink = performance.now() < invulnUntil;
+  ctx.save();
+  if(blink) ctx.globalAlpha = 0.45 + 0.55 * Math.abs(Math.sin(t / 70));
+  const rot = Math.max(-0.45, Math.min(1.15, player.vy / 480));
+  ctx.translate(PLAYER_X, player.y);
+  ctx.rotate(rot);
+  ctx.font = "30px 'Segoe UI Emoji','Noto Color Emoji',sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("🧔", 0, 0);
+  ctx.restore();
+
+  // confetti
+  for(let i = confetti.length - 1; i >= 0; i--){
+    const p = confetti[i];
+    p.x += p.vx; p.y += p.vy; p.vy += .05; p.rot += p.vr;
+    if(p.y > H + 30) confetti.splice(i, 1);
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rot);
+    ctx.fillStyle = p.color;
+    ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+    ctx.restore();
+  }
+}
+
+function burstConfetti(){
+  const colors = ["#ff9f43", "#ff7eb6", "#2ec4b6", "#ffd166", "#4d96ff", "#9b5de5"];
+  for(let i = 0; i < 170; i++){
+    confetti.push({
+      x: Math.random() * W,
+      y: -Math.random() * H * 0.4,
+      vx: (Math.random() - .5) * 1.8,
+      vy: 1 + Math.random() * 2.4,
+      w: 4 + Math.random() * 5, h: 6 + Math.random() * 7,
+      rot: Math.random() * Math.PI, vr: (Math.random() - .5) * .3,
+      color: colors[(Math.random() * colors.length) | 0],
+    });
+  }
+}
+
+/* ============================== main loop ============================== */
+let lastT = performance.now();
+function frame(now){
+  let dt = (now - lastT) / 1000;
+  lastT = now;
+  if(dt > 0.05) dt = 0.05;
+  update(dt);
+  checkCollisions();
+  draw();
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+/* ============================== audio ============================== */
 function beep(freq, dur){
   try{
     const AC = window.AudioContext || window.webkitAudioContext;
     if(!AC) return;
     const c = beep._c || (beep._c = new AC());
+    if(c.state === "suspended") c.resume();
     const o = c.createOscillator(), g = c.createGain();
     o.type = "triangle"; o.frequency.value = freq;
-    g.gain.setValueAtTime(.08, c.currentTime);
+    g.gain.setValueAtTime(.07, c.currentTime);
     g.gain.exponentialRampToValueAtTime(.0001, c.currentTime + dur);
     o.connect(g).connect(c.destination);
     o.start(); o.stop(c.currentTime + dur);
   }catch(e){}
 }
 
-function burstConfetti(){
-  const colors = ["#ff9f43","#ff7eb6","#2ec4b6","#ffd166","#4d96ff"];
-  for(let i=0;i<160;i++){
-    confetti.push({
-      x: Math.random()*canvas.width,
-      y: -Math.random()*canvas.height*0.5,
-      vx: (Math.random()-.5)*1.6,
-      vy: 1.2 + Math.random()*2.4,
-      w: 4+Math.random()*5, h: 6+Math.random()*7,
-      rot: Math.random()*Math.PI, vr:(Math.random()-.5)*.25,
-      color: colors[(Math.random()*colors.length)|0],
-    });
-  }
-}
-
-/* ============================== drawing ============================== */
-function draw(){
-  const t = performance.now();
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-
-  // floor
-  ctx.fillStyle = "#f7efdc";
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-  ctx.fillStyle = "rgba(160,130,90,.14)";
-  for(let r=0;r<H;r++) for(let c=0;c<W;c++)
-    if(MAZE[r][c]==="."){
-      ctx.beginPath();
-      ctx.arc(c*CELL+CELL/2, r*CELL+CELL/2, 1.3, 0, 7);
-      ctx.fill();
-    }
-
-  // goal glow
-  const g = CHECKS[2];
-  const pulse = (Math.sin(t/320)+1)/2;
-  ctx.save();
-  ctx.fillStyle = "rgba(255,190,80,"+(0.10+0.12*pulse)+")";
-  ctx.beginPath();
-  ctx.arc(g.c*CELL+CELL/2, g.r*CELL+CELL/2, CELL*1.1, 0, 7);
-  ctx.fill();
-  ctx.restore();
-
-  // walls (with a little 3D lip)
-  for(let r=0;r<H;r++) for(let c=0;c<W;c++){
-    if(MAZE[r][c] !== "#") continue;
-    const x = c*CELL, y = r*CELL;
-    ctx.fillStyle = "#c8a06a";
-    ctx.fillRect(x, y, CELL, CELL);
-    // top highlight
-    if(r===0 || MAZE[r-1][c] !== "#"){
-      ctx.fillStyle = "rgba(255,244,220,.55)";
-      ctx.fillRect(x, y, CELL, 3);
-    }
-    // bottom shade
-    if(r===H-1 || MAZE[r+1][c] !== "#"){
-      ctx.fillStyle = "rgba(90,55,15,.35)";
-      ctx.fillRect(x, y+CELL-3, CELL, 3);
-    }
-  }
-
-  // checkpoints
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.font = "13px 'Segoe UI Emoji','Noto Color Emoji',sans-serif";
-  for(let i=0;i<CHECKS.length;i++){
-    const ch = CHECKS[i];
-    if(i < checkpoint) continue; // already done
-    const x = ch.c*CELL+CELL/2, y = ch.r*CELL+CELL/2;
-    if(i === checkpoint){
-      // active ring
-      ctx.save();
-      ctx.strokeStyle = "rgba(255,159,67,"+(0.5+0.4*pulse)+")";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(x, y, 8+1.5*pulse, 0, 7);
-      ctx.stroke();
-      ctx.restore();
-    }
-    if(ch.ico === "👶"){
-      const bob = Math.sin(t/260)*1.6;
-      ctx.fillText(ch.ico, x, y+bob);
-    }else if(ch.ico === "🔧"){
-      ctx.fillText("🚐", x, y);
-      if(i === checkpoint){
-        ctx.font = "9px 'Segoe UI Emoji','Noto Color Emoji',sans-serif";
-        ctx.fillText("🔧", x+5, y+5);
-        ctx.font = "13px 'Segoe UI Emoji','Noto Color Emoji',sans-serif";
-      }
-    }else{
-      const s = 1 + 0.08*pulse;
-      ctx.save();
-      ctx.translate(x,y);
-      ctx.scale(s,s);
-      ctx.fillText("⭐", 0, 0);
-      ctx.restore();
-    }
-  }
-
-  // player (dad)
-  const px = pos.c*CELL+CELL/2;
-  const py = pos.r*CELL+CELL/2 + Math.sin(t/180)*0.8;
-  ctx.save();
-  ctx.fillStyle = "rgba(60,35,10,.25)";
-  ctx.beginPath();
-  ctx.ellipse(px, pos.r*CELL+CELL-3, 5, 2, 0, 0, 7);
-  ctx.fill();
-  ctx.restore();
-  ctx.font = "13px 'Segoe UI Emoji','Noto Color Emoji',sans-serif";
-  ctx.fillText("🧔", px, py);
-
-  // confetti
-  if(confetti.length){
-    for(const p of confetti){
-      p.x += p.vx; p.y += p.vy; p.rot += p.vr;
-      if(p.y > canvas.height+20) { p.y = -10; p.x = Math.random()*canvas.width; }
-      ctx.save();
-      ctx.translate(p.x,p.y);
-      ctx.rotate(p.rot);
-      ctx.fillStyle = p.color;
-      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
-      ctx.restore();
-    }
-  }
-}
-(function frame(){
-  // held-key auto-repeat
-  if(held && state === "playing"){
-    tryMove(DIRS[held].dr, DIRS[held].dc);
-  }
-  draw();
-  requestAnimationFrame(frame);
-})();
-
 /* ============================== events ============================== */
-const KEYMAP = {
-  ArrowUp:"up", ArrowDown:"down", ArrowLeft:"left", ArrowRight:"right",
-  w:"up", s:"down", a:"left", d:"right", W:"up", S:"down", A:"left", D:"right",
-};
-window.addEventListener("keydown", (e)=>{
-  if(e.key === "Enter" && state === "intro"){ startGame(); return; }
-  const d = KEYMAP[e.key];
-  if(!d) return;
+document.querySelectorAll(".diffbtn").forEach(b =>
+  b.addEventListener("click", () => startRun(b.dataset.diff)));
+$("retryBtn").addEventListener("click", () => startRun(diff));
+$("replayBtn").addEventListener("click", () => startRun(diff));
+$("changeBtn").addEventListener("click", toMenu);
+$("menuBtn").addEventListener("click", toMenu);
+
+canvas.addEventListener("pointerdown", (e) => {
   e.preventDefault();
-  held = d;
-  if(state !== "playing") startGame();
-  tryMove(DIRS[d].dr, DIRS[d].dc);
+  flap();
 });
-window.addEventListener("keyup", (e)=>{
-  if(KEYMAP[e.key] === held) held = null;
-});
-window.addEventListener("blur", ()=>{ held = null; });
+canvas.addEventListener("contextmenu", e => e.preventDefault());
 
-document.getElementById("startBtn").addEventListener("click", startGame);
-document.getElementById("replayBtn").addEventListener("click", ()=>{
-  reset();
-  $win.classList.add("hidden");
-  state = "playing";
-});
-document.getElementById("resetBtn").addEventListener("click", ()=>{
-  reset();
-  $win.classList.add("hidden");
-  state = "playing";
-});
-function startGame(){
-  if(state !== "intro") return;
-  $intro.classList.add("hidden");
-  state = "playing";
-}
-
-/* d-pad */
-const dpad = document.getElementById("dpad");
-dpad.querySelectorAll("button").forEach((b)=>{
-  const d = b.dataset.dir, v = DIRS[d];
-  const down = (e)=>{
+window.addEventListener("keydown", (e) => {
+  if(e.repeat) return;
+  const k = e.key;
+  if(k === " " || k === "ArrowUp" || k === "w" || k === "W"){
     e.preventDefault();
-    if(state === "intro") startGame();
-    held = d;
-    tryMove(v.dr, v.dc);
-  };
-  const up = ()=>{ if(held === d) held = null; };
-  b.addEventListener("pointerdown", down);
-  b.addEventListener("pointerup", up);
-  b.addEventListener("pointercancel", up);
-  b.addEventListener("pointerleave", up);
-  b.addEventListener("contextmenu", (e)=>e.preventDefault());
+    if(state === "menu"){ startRun("easy"); return; }
+    if(state === "crashed"){ startRun(diff); return; }
+    if(state === "won"){ startRun(diff); return; }
+    flap();
+  }else if(k === "Enter" && state === "menu"){
+    startRun("easy");
+  }
 });
+window.addEventListener("blur", () => { /* nothing held — tap based */ });
 
 /* ambient emojis */
 (function(){
-  const el = document.getElementById("ambient");
-  const icons = ["🎈","🎁","🎂","⭐","🎉","💛"];
-  for(let i=0;i<14;i++){
+  const el = $("ambient");
+  const icons = ["🎈", "🎁", "🎂", "⭐", "🎉", "💛"];
+  for(let i = 0; i < 14; i++){
     const s = document.createElement("span");
     s.textContent = icons[i % icons.length];
-    s.style.left = (Math.random()*100)+"vw";
-    s.style.animationDelay = (Math.random()*12)+"s";
-    s.style.animationDuration = (10+Math.random()*10)+"s";
-    s.style.fontSize = (16+Math.random()*18)+"px";
+    s.style.left = (Math.random() * 100) + "vw";
+    s.style.animationDelay = (Math.random() * 12) + "s";
+    s.style.animationDuration = (10 + Math.random() * 10) + "s";
+    s.style.fontSize = (16 + Math.random() * 18) + "px";
     el.appendChild(s);
   }
 })();
+
+updateHud();
 </script>
 </body>
 </html>
