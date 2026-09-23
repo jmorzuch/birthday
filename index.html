@@ -238,6 +238,10 @@ const $hudLegIco = $("hudLegIco"), $hudProgress = $("hudProgress"), $hudHearts =
 
 let state = "menu";            // menu | playing | crashed | won
 let diff = "easy";
+let pipeSeq = 0;               // global pipe counter (1-based) for leg/special tagging
+let frozen = false;            // test hook: halt the update loop for static capture
+const kenImg = new Image();
+kenImg.src = "ken.png";
 let leg = 0, passed = 0, totalPassed = 0, hearts = MAX_HEARTS;
 let player = { y: H / 2, vy: 0 };
 let pipes = [];
@@ -269,6 +273,8 @@ function showToast(msg){
 function startRun(d){
   diff = d;
   leg = 0; passed = 0; totalPassed = 0; hearts = MAX_HEARTS;
+  pipeSeq = 0;
+  frozen = false;
   player = { y: H / 2, vy: 0 };
   pipes = [];
   invulnUntil = 0;
@@ -294,7 +300,10 @@ window.__step = (dt) => { update(dt); checkCollisions(); };
 window.__setY = (y) => { player.y = y; player.vy = 0; };
 window.__noHit = () => { invulnUntil = performance.now() + 1e9; };
 window.__totalPassed = () => totalPassed;
-window.__gaps = () => pipes.map(p => ({ x: p.x, gapY: p.gapY, passed: p.passed }));
+window.__gaps = () => pipes.map(p => ({ x: p.x, gapY: p.gapY, passed: p.passed, special: !!p.special, leg: p.legAtSpawn, seq: p.seq }));
+window.iconVisible = iconVisible;
+window.__freeze = () => { frozen = true; };   // halt the update loop for static capture
+window.__pos = () => [PLAYER_X, player.y];
 
 function toMenu(){
   state = "menu";
@@ -338,7 +347,10 @@ function newPipe(x){
   const minC = 64 + c.gap / 2;
   const maxC = H - GROUND - 40 - c.gap / 2;
   const gapY = minC + Math.random() * (maxC - minC);
-  return { x, gapY, passed: false, legAtSpawn: leg };
+  const seq = ++pipeSeq;                                   // this pipe's 1-based position in the run
+  const legIdx = Math.min(Math.floor((seq - 1) / c.n), LEGS.length - 1);
+  const special = (seq - 1) % c.n === c.n - 1;             // last pipe of a leg -> the "goal" pipe
+  return { x, gapY, passed: false, legAtSpawn: legIdx, seq, special };
 }
 
 function update(dt){
@@ -421,6 +433,15 @@ function checkCollisions(){
 }
 
 /* ============================== drawing ============================== */
+// goal marker in the gap (only on the last pipe of each leg)
+function iconVisible(p){
+  if(!p || !p.special) return false;
+  const legIdx = p.legAtSpawn != null ? p.legAtSpawn : p.leg;
+  const isFinish = legIdx >= LEGS.length - 1;
+  // Chloe & RV are collectibles -> icon vanishes once the player passes (collected).
+  // The finish line is not collected -> it stays visible as the goal marker.
+  return !(p.passed && !isFinish);
+}
 function drawPipe(p){
   const c = cfg();
   const top = p.gapY - c.gap / 2;
@@ -453,11 +474,14 @@ function drawPipe(p){
   ctx.fillRect(x - 4, top - 12, PW + 8, 3);
   ctx.fillRect(x - 4, bot, PW + 8, 3);
 
-  // target icon in the gap
-  ctx.font = "22px 'Segoe UI Emoji','Noto Color Emoji',sans-serif";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText(L.ico, x + PW / 2, p.gapY);
+  // goal marker in the gap (only on the last pipe of each leg)
+  if(iconVisible(p)){
+    const L = LEGS[Math.min(p.legAtSpawn, LEGS.length - 1)];
+    ctx.font = "22px 'Segoe UI Emoji','Noto Color Emoji',sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(L.ico, x + PW / 2, p.gapY);
+  }
 }
 
 function draw(){
@@ -503,17 +527,31 @@ function draw(){
     ctx.fillRect(gx, H - GROUND + 12, 18, 3);
   }
 
-  // player (dad)
+  // player — Ken's face, clipped to a circle
   const blink = performance.now() < invulnUntil;
   ctx.save();
   if(blink) ctx.globalAlpha = 0.45 + 0.55 * Math.abs(Math.sin(t / 70));
   const rot = Math.max(-0.45, Math.min(1.15, player.vy / 480));
   ctx.translate(PLAYER_X, player.y);
   ctx.rotate(rot);
-  ctx.font = "30px 'Segoe UI Emoji','Noto Color Emoji',sans-serif";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText("🧔", 0, 0);
+  const d = PLAYER_R * 2;
+  if(kenImg.complete && kenImg.naturalWidth){
+    ctx.beginPath();
+    ctx.arc(0, 0, PLAYER_R + 2, 0, Math.PI * 2);       // white ring
+    ctx.fillStyle = "#fffdf8";
+    ctx.fill();
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(0, 0, PLAYER_R, 0, Math.PI * 2);
+    ctx.clip();
+    ctx.drawImage(kenImg, -d / 2, -d / 2, d, d);      // circle-crop
+    ctx.restore();
+  } else {
+    ctx.font = "30px 'Segoe UI Emoji','Noto Color Emoji',sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("🧔", 0, 0);
+  }
   ctx.restore();
 
   // confetti
@@ -551,8 +589,7 @@ function frame(now){
   let dt = (now - lastT) / 1000;
   lastT = now;
   if(dt > 0.05) dt = 0.05;
-  update(dt);
-  checkCollisions();
+  if(!frozen){ update(dt); checkCollisions(); }
   draw();
   requestAnimationFrame(frame);
 }
