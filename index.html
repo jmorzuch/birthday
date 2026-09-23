@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Ken's Big Day</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎂</text></svg>">
+<style>
+:root{
+  --cream:#f6eedb;
+  --ink:#3b2c1f;
+  --accent:#ff9f43;
+  --accent-deep:#e8822e;
+  --pink:#ff7eb6;
+  --teal:#2ec4b6;
+  --card:#fffaf0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(1100px 520px at 50% -10%, rgba(255,190,120,.35), transparent 60%),
+    radial-gradient(700px 500px at 110% 110%, rgba(255,126,182,.22), transparent 60%),
+    var(--cream);
+  min-height:100dvh;
+  display:flex;align-items:center;justify-content:center;
+  padding:18px 14px 28px;
+  overflow-x:hidden;
+  -webkit-tap-highlight-color:transparent;
+}
+.ambient{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.ambient span{position:absolute;bottom:-40px;font-size:22px;opacity:0;animation:floatUp 14s linear infinite}
+@keyframes floatUp{
+  0%{transform:translateY(0) rotate(0deg);opacity:0}
+  8%{opacity:.55}
+  92%{opacity:.55}
+  100%{transform:translateY(-110vh) rotate(320deg);opacity:0}
+}
+.stage{position:relative;z-index:1;width:min(560px,100%);display:flex;flex-direction:column;gap:14px;align-items:center}
+.card{
+  background:var(--card);
+  border:2px solid #e8d9bf;
+  border-radius:20px;
+  box-shadow:0 18px 40px rgba(90,60,20,.14), 0 2px 0 rgba(255,255,255,.8) inset;
+  width:100%;
+  padding:14px;
+}
+.topbar{
+  width:100%;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  flex-wrap:wrap;
+}
+.brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:15px}
+.brand .dot{width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(255,159,67,.25)}
+.hud{display:flex;align-items:center;gap:10px}
+.steps{font-variant-numeric:tabular-nums;font-weight:600;font-size:14px;color:#8a7458;background:#f3e8d2;padding:5px 12px;border-radius:999px}
+.btn{
+  border:2px solid #e0cfae;background:#fff8ec;color:var(--ink);
+  font:inherit;font-weight:700;font-size:14px;
+  padding:8px 16px;border-radius:999px;cursor:pointer;
+  transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
+}
+.btn:hover{transform:translateY(-1px);box-shadow:0 6px 14px rgba(120,80,20,.15)}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--accent);border-color:var(--accent-deep);color:#fff;box-shadow:0 6px 0 var(--accent-deep)}
+.btn-primary:hover{box-shadow:0 7px 0 var(--accent-deep);transform:translateY(-1px)}
+.btn-primary:active{box-shadow:0 3px 0 var(--accent-deep);transform:translateY(3px)}
+.canvas-wrap{position:relative;display:flex;justify-content:center}
+canvas{
+  display:block;
+  max-width:100%;height:auto;
+  border-radius:14px;
+  box-shadow:0 10px 24px rgba(80,50,10,.10) inset, 0 4px 10px rgba(80,50,10,.12);
+}
+.toast{
+  position:absolute;left:50%;top:14px;transform:translateX(-50%) translateY(-8px);
+  background:var(--ink);color:#fff8ec;
+  font-weight:700;font-size:14px;letter-spacing:.02em;
+  padding:9px 18px;border-radius:999px;
+  opacity:0;pointer-events:none;transition:opacity .25s ease, transform .25s ease;
+  white-space:nowrap;box-shadow:0 8px 20px rgba(0,0,0,.25);
+  z-index:5;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.foot{font-size:13px;color:#9b8465;text-align:center;line-height:1.5}
+.foot kbd{
+  font-family:inherit;font-size:12px;background:#f0e4cc;border:1px solid #dcc9a4;border-bottom-width:2px;
+  border-radius:6px;padding:1px 7px;margin:0 2px;color:#6d573a;font-weight:700;
+}
+/* overlays */
+.overlay{
+  position:absolute;inset:0;z-index:10;
+  border-radius:14px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+  text-align:center;padding:26px 20px;
+  background:rgba(255,250,240,.94);
+  backdrop-filter:blur(6px);
+  transition:opacity .4s ease;
+}
+.overlay.hidden{opacity:0;pointer-events:none}
+.overlay h1{font-size:clamp(26px,6vw,40px);font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.overlay .sub{font-size:15px;color:#8a7458;max-width:40ch;line-height:1.55}
+.story{display:flex;flex-direction:column;gap:10px;align-items:center;margin:4px 0 8px}
+.story .step{
+  display:flex;align-items:center;gap:12px;
+  background:#fff;border:2px solid #ecdcbd;border-radius:14px;
+  padding:9px 16px;font-weight:600;font-size:14.5px;
+}
+.story .step .ico{font-size:22px}
+.story .step .n{
+  width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;
+  display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex:none;
+}
+.win h1{background:linear-gradient(90deg,#ff9f43,#ff7eb6 55%,#2ec4b6);-webkit-background-clip:text;background-clip:text;color:transparent}
+.win .gq{font-size:19px;font-weight:700;color:var(--ink);margin-top:2px}
+.win .gb{font-size:12.5px;color:#a08a6c;margin-top:-8px}
+.cake{font-size:52px;animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+/* d-pad (touch) — in-flow, centered below the board so it never covers the maze */
+.dpad{
+  margin:2px auto 0;
+  display:grid;grid-template-columns:repeat(3,58px);grid-template-rows:repeat(3,58px);
+  gap:7px;
+}
+.dpad button{
+  border:none;border-radius:16px;
+  background:#fff;
+  border:2px solid #e0cfae;
+  font-size:22px;font-weight:800;color:#8a6d43;
+  cursor:pointer;touch-action:none;
+  box-shadow:0 3px 0 #d8c39a;
+  user-select:none;-webkit-user-select:none;
+}
+.dpad button:active{transform:translateY(2px);box-shadow:0 1px 0 #d8c39a;background:#fff3dd}
+.dpad .up{grid-column:2;grid-row:1}
+.dpad .left{grid-column:1;grid-row:2}
+.dpad .down{grid-column:2;grid-row:3}
+.dpad .right{grid-column:3;grid-row:2}
+@media (hover:hover) and (pointer:fine){ .dpad{display:none} }
+</style>
+</head>
+<body>
+<div class="ambient" id="ambient" aria-hidden="true"></div>
+
+<main class="stage">
+  <header class="topbar">
+    <div class="brand"><span class="dot"></span> Chloe's Big Day</div>
+    <div class="hud">
+      <span class="steps" id="steps">steps: 0</span>
+      <button class="btn" id="resetBtn" type="button">↻ Restart</button>
+    </div>
+  </header>
+
+  <section class="card canvas-wrap">
+    <canvas id="game" width="304" height="364"></canvas>
+
+    <div class="toast" id="toast"></div>
+
+    <!-- intro -->
+    <div class="overlay" id="intro">
+      <div style="font-size:44px">🎂</div>
+      <h1>Ken's Big Day</h1>
+      <p class="sub">One last errand run before the party. You've got this, Dad.</p>
+      <div class="story">
+        <div class="step"><span class="ico">👶</span><span>Reach <b>Chloe</b> &amp; get her to the RV</span><span class="n">1</span></div>
+        <div class="step"><span class="ico">🚐</span><span>Patch the <b>RV</b> — it's got a flat</span><span class="n">2</span></div>
+        <div class="step"><span class="ico">⭐</span><span>Make it to the <b>finish line</b></span><span class="n">3</span></div>
+      </div>
+      <button class="btn btn-primary" id="startBtn" type="button" style="font-size:17px;padding:12px 34px">Start the day →</button>
+      <p class="sub" style="font-size:12.5px">Arrow keys / WASD to move</p>
+    </div>
+
+    <!-- win -->
+    <div class="overlay hidden win" id="win">
+      <div class="cake">🎂</div>
+      <h1>You made it!</h1>
+      <div>
+        <p class="gq">"But did you think of The Game?"</p>
+      </div>
+      <h1>HAPPY BIRTHDAY!</h1>
+      <p class="sub" id="winSteps"></p>
+      <button class="btn btn-primary" id="replayBtn" type="button" style="font-size:16px;padding:11px 30px">Play again ↻</button>
+    </div>
+  </section>
+
+  <p class="foot">Arrow keys or <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> to move (tap the arrows on your phone) &middot; reach <b>Chloe 👶</b>, patch the <b>RV 🚐</b>, then the <b>star ⭐</b></p>
+
+  <div class="dpad" id="dpad" aria-label="movement">
+    <button class="up" data-dir="up" type="button" aria-label="up">▲</button>
+    <button class="left" data-dir="left" type="button" aria-label="left">◀</button>
+    <button class="down" data-dir="down" type="button" aria-label="down">▼</button>
+    <button class="right" data-dir="right" type="button" aria-label="right">▶</button>
+  </div>
+</main>
+
+<script>
+"use strict";
+/* ============================== data ============================== */
+const MAZE = [
+"###################",
+"#.......#.....#...#",
+"#######.#.#.#.###.#",
+"#.....#.#.#.#.....#",
+"#.#####.#.#.#####.#",
+"#.#.....#.#.....#.#",
+"#.#.#########.#.###",
+"#...#.......#.#...#",
+"#.#######.#.#####.#",
+"#.....#...#.....#.#",
+"#####.#.#######.#.#",
+"#.......#.........#",
+"###################",
+];
+const H = MAZE.length, W = MAZE[0].length;
+const CELL = 16;
+const START = {r:1, c:1};
+const CHECKS = [
+  {r:6,  c:3,  ico:"👶", done:"Chloe's all buckled in! 💛"},
+  {r:9,  c:8,  ico:"🔧", done:"RV patched — back on the road! 🚐"},
+  {r:11, c:17, ico:"⭐", done:"You made it!"},
+];
+
+/* ============================== state ============================== */
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+const $steps = document.getElementById("steps");
+const $toast = document.getElementById("toast");
+const $intro = document.getElementById("intro");
+const $win = document.getElementById("win");
+const $winSteps = document.getElementById("winSteps");
+
+let state = "intro";           // intro | playing | won
+let pos, steps, checkpoint, toastTimer = 0, winAt = 0;
+let confetti = [];
+let prev = {r:START.r, c:START.c};
+
+function reset(){
+  pos = {r:START.r, c:START.c};
+  prev = {r:START.r, c:START.c};
+  steps = 0; checkpoint = 0;
+  confetti = [];
+  $steps.textContent = "steps: 0";
+}
+reset();
+
+/* ============================== input ============================== */
+const DIRS = {
+  up:{dr:-1,dc:0}, down:{dr:1,dc:0}, left:{dr:0,dc:-1}, right:{dr:0,dc:1},
+};
+var moveInterval = 130; // ms between steps (testable)
+let lastMove = 0;
+let held = null;
+
+function tryMove(dr, dc){
+  if(window.__dbg) window.__dbg.push({dr,dc,reason:"state:"+state});
+  if(state !== "playing") return;
+  const now = performance.now();
+  if(now - lastMove < moveInterval){ if(window.__dbg) window.__dbg.push({dr,dc,reason:"throttle now="+Math.round(now)+" last="+lastMove+" iv="+moveInterval}); return; }
+  const nr = pos.r + dr, nc = pos.c + dc;
+  if(nr < 0 || nr >= H || nc < 0 || nc >= W){ if(window.__dbg) window.__dbg.push({dr,dc,reason:"oob "+nr+","+nc}); return; }
+  if(MAZE[nr][nc] === "#"){ if(window.__dbg) window.__dbg.push({dr,dc,reason:"wall "+nr+","+nc}); return; }
+  prev = {r:pos.r, c:pos.c};
+  pos = {r:nr, c:nc};
+  steps++;
+  lastMove = now;
+  if(window.__dbg) window.__dbg.push({dr,dc,ok:true,to:[nr,nc]});
+  $steps.textContent = "steps: " + steps;
+  checkCell();
+}
+window.__tryMove = tryMove; // test hooks (also handy for debugging)
+window.__test_maze = () => MAZE;
+window.__state = () => state;
+window.__steps = () => steps;
+window.__setThrottle = (ms) => { moveInterval = ms; };
+window.__pos = () => [pos.r, pos.c];
+window.__setPos = (r, c) => { pos = {r:r, c:c}; };
+window.__ver = "v3";
+
+function checkCell(){
+  const ch = CHECKS[checkpoint];
+  if(!ch) return;
+  if(pos.r === ch.r && pos.c === ch.c){
+    checkpoint++;
+    if(checkpoint >= CHECKS.length){
+      win();
+    }else{
+      showToast(ch.done);
+      beep(660, .09); setTimeout(()=>beep(880,.1), 90);
+    }
+  }
+}
+window.__checkpoint = () => checkpoint;
+
+/* ============================== win / toast ============================== */
+function win(){
+  state = "won";
+  winAt = performance.now();
+  $winSteps.textContent = "finished in " + steps + " steps";
+  $win.classList.remove("hidden");
+  burstConfetti();
+  beep(523,.12); setTimeout(()=>beep(659,.12),120); setTimeout(()=>beep(784,.18),240);
+}
+window.__won = () => state === "won";
+
+function showToast(msg){
+  $toast.textContent = msg;
+  $toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>$toast.classList.remove("show"), 2100);
+}
+
+function beep(freq, dur){
+  try{
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if(!AC) return;
+    const c = beep._c || (beep._c = new AC());
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = "triangle"; o.frequency.value = freq;
+    g.gain.setValueAtTime(.08, c.currentTime);
+    g.gain.exponentialRampToValueAtTime(.0001, c.currentTime + dur);
+    o.connect(g).connect(c.destination);
+    o.start(); o.stop(c.currentTime + dur);
+  }catch(e){}
+}
+
+function burstConfetti(){
+  const colors = ["#ff9f43","#ff7eb6","#2ec4b6","#ffd166","#4d96ff"];
+  for(let i=0;i<160;i++){
+    confetti.push({
+      x: Math.random()*canvas.width,
+      y: -Math.random()*canvas.height*0.5,
+      vx: (Math.random()-.5)*1.6,
+      vy: 1.2 + Math.random()*2.4,
+      w: 4+Math.random()*5, h: 6+Math.random()*7,
+      rot: Math.random()*Math.PI, vr:(Math.random()-.5)*.25,
+      color: colors[(Math.random()*colors.length)|0],
+    });
+  }
+}
+
+/* ============================== drawing ============================== */
+function draw(){
+  const t = performance.now();
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  // floor
+  ctx.fillStyle = "#f7efdc";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = "rgba(160,130,90,.14)";
+  for(let r=0;r<H;r++) for(let c=0;c<W;c++)
+    if(MAZE[r][c]==="."){
+      ctx.beginPath();
+      ctx.arc(c*CELL+CELL/2, r*CELL+CELL/2, 1.3, 0, 7);
+      ctx.fill();
+    }
+
+  // goal glow
+  const g = CHECKS[2];
+  const pulse = (Math.sin(t/320)+1)/2;
+  ctx.save();
+  ctx.fillStyle = "rgba(255,190,80,"+(0.10+0.12*pulse)+")";
+  ctx.beginPath();
+  ctx.arc(g.c*CELL+CELL/2, g.r*CELL+CELL/2, CELL*1.1, 0, 7);
+  ctx.fill();
+  ctx.restore();
+
+  // walls (with a little 3D lip)
+  for(let r=0;r<H;r++) for(let c=0;c<W;c++){
+    if(MAZE[r][c] !== "#") continue;
+    const x = c*CELL, y = r*CELL;
+    ctx.fillStyle = "#c8a06a";
+    ctx.fillRect(x, y, CELL, CELL);
+    // top highlight
+    if(r===0 || MAZE[r-1][c] !== "#"){
+      ctx.fillStyle = "rgba(255,244,220,.55)";
+      ctx.fillRect(x, y, CELL, 3);
+    }
+    // bottom shade
+    if(r===H-1 || MAZE[r+1][c] !== "#"){
+      ctx.fillStyle = "rgba(90,55,15,.35)";
+      ctx.fillRect(x, y+CELL-3, CELL, 3);
+    }
+  }
+
+  // checkpoints
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.font = "13px 'Segoe UI Emoji','Noto Color Emoji',sans-serif";
+  for(let i=0;i<CHECKS.length;i++){
+    const ch = CHECKS[i];
+    if(i < checkpoint) continue; // already done
+    const x = ch.c*CELL+CELL/2, y = ch.r*CELL+CELL/2;
+    if(i === checkpoint){
+      // active ring
+      ctx.save();
+      ctx.strokeStyle = "rgba(255,159,67,"+(0.5+0.4*pulse)+")";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(x, y, 8+1.5*pulse, 0, 7);
+      ctx.stroke();
+      ctx.restore();
+    }
+    if(ch.ico === "👶"){
+      const bob = Math.sin(t/260)*1.6;
+      ctx.fillText(ch.ico, x, y+bob);
+    }else if(ch.ico === "🔧"){
+      ctx.fillText("🚐", x, y);
+      if(i === checkpoint){
+        ctx.font = "9px 'Segoe UI Emoji','Noto Color Emoji',sans-serif";
+        ctx.fillText("🔧", x+5, y+5);
+        ctx.font = "13px 'Segoe UI Emoji','Noto Color Emoji',sans-serif";
+      }
+    }else{
+      const s = 1 + 0.08*pulse;
+      ctx.save();
+      ctx.translate(x,y);
+      ctx.scale(s,s);
+      ctx.fillText("⭐", 0, 0);
+      ctx.restore();
+    }
+  }
+
+  // player (dad)
+  const px = pos.c*CELL+CELL/2;
+  const py = pos.r*CELL+CELL/2 + Math.sin(t/180)*0.8;
+  ctx.save();
+  ctx.fillStyle = "rgba(60,35,10,.25)";
+  ctx.beginPath();
+  ctx.ellipse(px, pos.r*CELL+CELL-3, 5, 2, 0, 0, 7);
+  ctx.fill();
+  ctx.restore();
+  ctx.font = "13px 'Segoe UI Emoji','Noto Color Emoji',sans-serif";
+  ctx.fillText("🧔", px, py);
+
+  // confetti
+  if(confetti.length){
+    for(const p of confetti){
+      p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+      if(p.y > canvas.height+20) { p.y = -10; p.x = Math.random()*canvas.width; }
+      ctx.save();
+      ctx.translate(p.x,p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      ctx.restore();
+    }
+  }
+}
+(function frame(){
+  // held-key auto-repeat
+  if(held && state === "playing"){
+    tryMove(DIRS[held].dr, DIRS[held].dc);
+  }
+  draw();
+  requestAnimationFrame(frame);
+})();
+
+/* ============================== events ============================== */
+const KEYMAP = {
+  ArrowUp:"up", ArrowDown:"down", ArrowLeft:"left", ArrowRight:"right",
+  w:"up", s:"down", a:"left", d:"right", W:"up", S:"down", A:"left", D:"right",
+};
+window.addEventListener("keydown", (e)=>{
+  if(e.key === "Enter" && state === "intro"){ startGame(); return; }
+  const d = KEYMAP[e.key];
+  if(!d) return;
+  e.preventDefault();
+  held = d;
+  if(state !== "playing") startGame();
+  tryMove(DIRS[d].dr, DIRS[d].dc);
+});
+window.addEventListener("keyup", (e)=>{
+  if(KEYMAP[e.key] === held) held = null;
+});
+window.addEventListener("blur", ()=>{ held = null; });
+
+document.getElementById("startBtn").addEventListener("click", startGame);
+document.getElementById("replayBtn").addEventListener("click", ()=>{
+  reset();
+  $win.classList.add("hidden");
+  state = "playing";
+});
+document.getElementById("resetBtn").addEventListener("click", ()=>{
+  reset();
+  $win.classList.add("hidden");
+  state = "playing";
+});
+function startGame(){
+  if(state !== "intro") return;
+  $intro.classList.add("hidden");
+  state = "playing";
+}
+
+/* d-pad */
+const dpad = document.getElementById("dpad");
+dpad.querySelectorAll("button").forEach((b)=>{
+  const d = b.dataset.dir, v = DIRS[d];
+  const down = (e)=>{
+    e.preventDefault();
+    if(state === "intro") startGame();
+    held = d;
+    tryMove(v.dr, v.dc);
+  };
+  const up = ()=>{ if(held === d) held = null; };
+  b.addEventListener("pointerdown", down);
+  b.addEventListener("pointerup", up);
+  b.addEventListener("pointercancel", up);
+  b.addEventListener("pointerleave", up);
+  b.addEventListener("contextmenu", (e)=>e.preventDefault());
+});
+
+/* ambient emojis */
+(function(){
+  const el = document.getElementById("ambient");
+  const icons = ["🎈","🎁","🎂","⭐","🎉","💛"];
+  for(let i=0;i<14;i++){
+    const s = document.createElement("span");
+    s.textContent = icons[i % icons.length];
+    s.style.left = (Math.random()*100)+"vw";
+    s.style.animationDelay = (Math.random()*12)+"s";
+    s.style.animationDuration = (10+Math.random()*10)+"s";
+    s.style.fontSize = (16+Math.random()*18)+"px";
+    el.appendChild(s);
+  }
+})();
+</script>
+</body>
+</html>
