@@ -301,25 +301,22 @@ const LEGS = [
 const MAX_HEARTS = 3;
 
 /* ============================== leaderboard config ============================== */
-/* Shared leaderboard (JSONBin).
-   1. Go to https://jsonbin.io  → sign up (free)
-   2. Create a new bin (any name, e.g. "birthday-scores")
-   3. Copy the MASTER KEY  (Account → Settings → API Key)  → LB.key
-   4. Copy the BIN ID      (shown under the bin name)        → LB.binId
-   Leave either blank to fall back to per-device (localStorage) scores. */
+/* Shared leaderboard on JSONBin.
+   LB.key  = "FLAPPY BIRTHDAY" access key (works via X-Access-Key header)
+   LB.binId = shared scores bin (created 2026-09-23)
+   If either is blank, the board falls back to per-device (localStorage) scores. */
 const LB = {
-  key:   "PASTE_JSONBIN_MASTER_KEY_HERE",
-  binId: "PASTE_JSONBIN_BIN_ID_HERE",
+  key:   "$2a$10$CYYM68WretbCi58SjYaosuCBsWDd4kkUQs32wS5sCikQKXpwtnghK",
+  binId: "6ab40019ac6210605aedb3cc",
 };
-const LB_ENABLED = LB.key !== "PASTE_JSONBIN_MASTER_KEY_HERE"
-               && LB.binId !== "PASTE_JSONBIN_BIN_ID_HERE";
+const LB_ENABLED = !!(LB.key && LB.key.indexOf("PASTE_") !== 0 && LB.binId && LB.binId.indexOf("PASTE_") !== 0);
 const LB_API = "https://api.jsonbin.io/v3/b";
 const LB_LS_KEY = "kbigday_scores_v1";   // localStorage fallback
 const LB_MAX = 50;                        // keep at most this many entries
 
 /* ============================== leaderboard: storage ============================== */
 function lbHeaders(){
-  return { "X-Master-Key": LB.key, "Accept": "application/json", "Content-Type": "application/json" };
+  return { "X-Access-Key": LB.key, "Accept": "application/json", "Content-Type": "application/json" };
 }
 function lbLocalRead(){
   try{
@@ -544,6 +541,7 @@ function toMenu(){
   state = "menu";
   $crash.classList.add("hidden");
   $win.classList.add("hidden");
+  $lb.classList.add("hidden");
   $menu.classList.remove("hidden");
 }
 
