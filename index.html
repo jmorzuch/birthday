@@ -100,13 +100,17 @@ canvas{
 .overlay{
   position:absolute;inset:0;z-index:10;
   border-radius:14px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
-  text-align:center;padding:24px 18px;
+  overflow-y:auto;
   background:rgba(255,250,240,.95);
   backdrop-filter:blur(6px);
   transition:opacity .35s ease;
 }
-.overlay.hidden{opacity:0;pointer-events:none}
+.overlay.hidden{opacity:0;pointer-events:none;visibility:hidden}
+.ov-in{
+  margin:auto;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  text-align:center;padding:22px 16px;width:100%;
+}
 .overlay h1{font-size:clamp(24px,7vw,34px);font-weight:800;letter-spacing:-.02em;line-height:1.1}
 .overlay .sub{font-size:14.5px;color:#8a7458;max-width:42ch;line-height:1.55}
 .story{display:flex;flex-direction:column;gap:8px;align-items:center;margin:2px 0 6px;width:100%}
@@ -148,6 +152,44 @@ canvas{
   user-select:none;-webkit-user-select:none;
 }
 .tapbtn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--accent-deep)}
+
+/* confetti */
+.confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:14px;z-index:5}
+.confetti i{position:absolute;top:-12px;width:9px;height:14px;border-radius:2px;opacity:.92;animation:confFall linear forwards}
+@keyframes confFall{
+  to{transform:translate(var(--dx,0),560px) rotate(var(--rr,720deg));opacity:.92}
+}
+
+/* leaderboard (fully opaque so it cleanly covers the win/crash screen underneath) */
+#lb{background:rgba(255,250,240,.99)}
+.lb-card{width:100%;max-width:372px;margin:auto;text-align:left}
+.lb-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.lb-head h2{font-size:19px;font-weight:800;letter-spacing:-.02em}
+.lb-head .lb-src{font-size:10.5px;font-weight:800;color:#9a825f;background:#fff3df;border:1px solid #ead9b8;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.lb-list{display:flex;flex-direction:column;gap:6px;max-height:60vh;overflow-y:auto}
+.lb-empty{color:#8a7458;font-size:13.5px;padding:14px 4px;text-align:center}
+.lb-row{display:flex;align-items:center;gap:8px;background:#fffdf8;border:1px solid #eadcc7;border-radius:12px;padding:8px 10px;box-shadow:0 2px 0 rgba(180,140,90,.06)}
+.lb-rank{flex:none;width:22px;font-size:13px;font-weight:800;color:#c5a97e;text-align:center}
+.lb-row.me{border-color:#f2c14e;box-shadow:0 0 0 2px #f2c14e33}
+.lb-main{flex:1;min-width:0}
+.lb-name{font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-name small{font-weight:600;color:#b39b74;margin-left:5px}
+.lb-sub{font-size:11.5px;color:#9c855f;font-weight:600;margin-top:1px}
+.lb-badges{flex:none;display:flex;gap:4px;align-items:center;flex-wrap:wrap;justify-content:flex-end;max-width:130px}
+.bdg{font-size:10px;font-weight:800;padding:2px 7px;border-radius:999px;white-space:nowrap}
+.bdg-win{background:#e7f7ee;color:#1d8a4e;border:1px solid #b5e4c6}
+.bdg-fail{background:#fdeaea;color:#c0392b;border:1px solid #f2c4c4}
+.bdg-skill{background:#eef2ff;color:#4356c6;border:1px solid #d3dcfb}
+.bdg-lives{background:#fff4e2;color:#c07a1a;border:1px solid #f3d9a8}
+.lb-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px}
+.lb-foot button{flex:1}
+.lb-note{font-size:11px;color:#a08a67;font-weight:600;margin-top:8px;text-align:center}
+.lb-err{font-size:12px;color:#c0392b;font-weight:700;background:#fdeaea;border:1px solid #f2c4c4;border-radius:10px;padding:8px 10px;margin-top:10px;text-align:center}
+.score-card{width:100%;max-width:300px;margin:4px auto 2px;background:#fffdf8;border:1px solid #eadcc7;border-radius:14px;padding:12px 14px;text-align:left;box-shadow:0 3px 0 rgba(180,140,90,.07)}
+.score-row{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#8a7458;padding:3px 0}
+.score-row b{font-size:14px;font-weight:800;color:#3b2f22;text-align:right}
+.score-row .b-win{color:#1d8a4e}.score-row .b-fail{color:#c0392b}
+.name-in{width:100%;max-width:300px;margin:2px auto 0;display:block}
 </style>
 </head>
 <body>
@@ -159,6 +201,7 @@ canvas{
     <div class="hud">
       <span class="chip"><span class="legico" id="hudLegIco">👶</span><span id="hudProgress">0/5</span></span>
       <span class="chip hearts" id="hudHearts" title="lives">♥♥♥</span>
+      <button class="btn" id="lbBtn" type="button" title="Leaderboard">🏆</button>
       <button class="btn" id="menuBtn" type="button">Menu</button>
     </div>
   </header>
@@ -170,39 +213,68 @@ canvas{
 
     <!-- menu -->
     <div class="overlay" id="menu">
-      <div style="font-size:42px">🎂</div>
-      <h1>Ken's Big Day</h1>
-      <p class="sub">A flappy errand run for the birthday boy. Tap (or press space) to flap — dodge the gift stacks!</p>
-      <div class="story">
-        <div class="step"><span class="ico">👶</span><span>Rescue <b>Chloe</b></span><span class="n">1</span></div>
-        <div class="step"><span class="ico">🚐</span><span>Repair the <b>RV</b></span><span class="n">2</span></div>
-        <div class="step"><span class="ico">🏁</span><span>Reach the <b>finish</b></span><span class="n">3</span></div>
+      <div class="ov-in">
+        <div style="font-size:42px">🎂</div>
+        <h1>Ken's Big Day</h1>
+        <p class="sub">A flappy errand run for the birthday boy. Tap (or press space) to flap — dodge the gift stacks!</p>
+        <div class="story">
+          <div class="step"><span class="ico">👶</span><span>Rescue <b>Chloe</b></span><span class="n">1</span></div>
+          <div class="step"><span class="ico">🚐</span><span>Repair the <b>RV</b></span><span class="n">2</span></div>
+          <div class="step"><span class="ico">🏁</span><span>Reach the <b>finish</b></span><span class="n">3</span></div>
+        </div>
+        <div class="diffrow">
+          <button class="diffbtn" data-diff="easy" type="button"><span>Easy</span><span><small>5 stops per leg</small> <span class="stars">★</span></span></button>
+          <button class="diffbtn" data-diff="medium" type="button"><span>Medium</span><span><small>10 stops per leg</small> <span class="stars">★★</span></span></button>
+          <button class="diffbtn" data-diff="hard" type="button"><span>Hard</span><span><small>20 stops per leg</small> <span class="stars">★★★</span></span></button>
+        </div>
+        <p class="sub" style="font-size:12.5px">3 hearts — each bump costs one. Good luck, Ken!</p>
       </div>
-      <div class="diffrow">
-        <button class="diffbtn" data-diff="easy" type="button"><span>Easy</span><span><small>5 stops per leg</small> <span class="stars">★</span></span></button>
-        <button class="diffbtn" data-diff="medium" type="button"><span>Medium</span><span><small>10 stops per leg</small> <span class="stars">★★</span></span></button>
-        <button class="diffbtn" data-diff="hard" type="button"><span>Hard</span><span><small>20 stops per leg</small> <span class="stars">★★★</span></span></button>
-      </div>
-      <p class="sub" style="font-size:12.5px">3 hearts — each bump costs one. Good luck, Ken!</p>
     </div>
 
     <!-- crashed -->
     <div class="overlay hidden" id="crash">
-      <div style="font-size:44px">😵</div>
-      <h1>Whoops!</h1>
-      <p class="sub">The birthday boy got a little wobbly. One more try — you've got this!</p>
-      <button class="tapbtn" id="retryBtn" type="button">Try again ↻</button>
-      <button class="btn" id="changeBtn" type="button">Change difficulty</button>
+      <div class="ov-in">
+        <div style="font-size:44px">😵</div>
+        <h1>Whoops!</h1>
+        <p class="sub">The birthday boy got a little wobbly. One more try — you've got this!</p>
+        <div class="score-card" id="crashCard"></div>
+        <input class="name-in" id="crashName" maxlength="18" placeholder="Type your name…" autocomplete="off" autocapitalize="off">
+        <button class="tapbtn" id="crashSave" type="button">Save score 🏆</button>
+        <button class="btn" id="retryBtn" type="button">Play again ↻</button>
+        <button class="btn" id="changeBtn" type="button">Change difficulty</button>
+      </div>
     </div>
 
     <!-- win -->
     <div class="overlay hidden win" id="win">
-      <div class="cake">🎂</div>
-      <h1>You made it!</h1>
-      <p class="gq">"But did you think of The Game?"</p>
-      <h1>HAPPY BIRTHDAY!</h1>
-      <p class="sub" id="winStats"></p>
-      <button class="tapbtn" id="replayBtn" type="button">Play again ↻</button>
+      <div class="ov-in">
+        <div class="cake">🎂</div>
+        <h1>You made it!</h1>
+        <p class="gq">"But did you think of The Game?"</p>
+        <h1>HAPPY BIRTHDAY!</h1>
+        <p class="sub" id="winStats"></p>
+        <div class="score-card" id="winCard"></div>
+        <input class="name-in" id="winName" maxlength="18" placeholder="Type your name…" autocomplete="off" autocapitalize="off">
+        <button class="tapbtn" id="winSave" type="button">Save score 🏆</button>
+        <button class="btn" id="replayBtn" type="button">Play again ↻</button>
+      </div>
+    </div>
+
+    <!-- leaderboard -->
+    <div class="overlay hidden" id="lb">
+      <div class="lb-card">
+        <div class="lb-head">
+          <h2>🏆 Leaderboard</h2>
+          <span class="lb-src" id="lbSrc">this device</span>
+        </div>
+        <div class="lb-list" id="lbList"><p class="lb-empty">Loading…</p></div>
+        <p class="lb-note" id="lbNote"></p>
+        <div class="lb-foot">
+          <button class="btn" id="lbRefresh" type="button">↻ Refresh</button>
+          <button class="btn btn-primary" id="lbPlay" type="button">Play again ↻</button>
+          <button class="btn" id="lbClose" type="button">Close</button>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -228,6 +300,165 @@ const LEGS = [
 ];
 const MAX_HEARTS = 3;
 
+/* ============================== leaderboard config ============================== */
+/* Shared leaderboard (JSONBin).
+   1. Go to https://jsonbin.io  → sign up (free)
+   2. Create a new bin (any name, e.g. "birthday-scores")
+   3. Copy the MASTER KEY  (Account → Settings → API Key)  → LB.key
+   4. Copy the BIN ID      (shown under the bin name)        → LB.binId
+   Leave either blank to fall back to per-device (localStorage) scores. */
+const LB = {
+  key:   "PASTE_JSONBIN_MASTER_KEY_HERE",
+  binId: "PASTE_JSONBIN_BIN_ID_HERE",
+};
+const LB_ENABLED = LB.key !== "PASTE_JSONBIN_MASTER_KEY_HERE"
+               && LB.binId !== "PASTE_JSONBIN_BIN_ID_HERE";
+const LB_API = "https://api.jsonbin.io/v3/b";
+const LB_LS_KEY = "kbigday_scores_v1";   // localStorage fallback
+const LB_MAX = 50;                        // keep at most this many entries
+
+/* ============================== leaderboard: storage ============================== */
+function lbHeaders(){
+  return { "X-Master-Key": LB.key, "Accept": "application/json", "Content-Type": "application/json" };
+}
+function lbLocalRead(){
+  try{
+    const raw = localStorage.getItem(LB_LS_KEY);
+    const a = raw ? JSON.parse(raw) : [];
+    return Array.isArray(a) ? a : [];
+  }catch(e){ return []; }
+}
+function lbLocalWrite(a){
+  try{ localStorage.setItem(LB_LS_KEY, JSON.stringify(a.slice(0, LB_MAX))); }catch(e){}
+}
+async function lbFetch(){
+  const r = await fetch(LB_API + "/" + LB.binId, { headers: lbHeaders(), cache: "no-store" });
+  if(!r.ok) throw new Error("bin read " + r.status);
+  const j = await r.json();
+  const rec = j && j.record;
+  return Array.isArray(rec) ? rec : (rec && Array.isArray(rec.scores) ? rec.scores : []);
+}
+async function lbPush(entry){
+  const cur = await lbFetch();
+  const next = cur.concat([entry]).slice(0, LB_MAX);
+  const r = await fetch(LB_API + "/" + LB.binId, { method: "PUT", headers: lbHeaders(), body: JSON.stringify(next) });
+  if(!r.ok) throw new Error("bin write " + r.status);
+  return next;
+}
+function lbScore(e){
+  // wins first, then most lives left, then most pipes, then earliest
+  const s = (e.result === "win" ? 100000 : 0);
+  return s + (Number(e.lives) || 0) * 1000 + (Number(e.pipes) || 0) * 1 + (e.ts ? -e.ts / 1e13 : 0);
+}
+function lbSort(a){
+  return a.slice().sort((x, y) => lbScore(y) - lbScore(x));
+}
+function makeEntry(name, won){
+  const secs = Math.max(1, Math.round((performance.now() - runStartAt) / 1000));
+  return {
+    name: (name || "Ken").toString().trim().slice(0, 18) || "Ken",
+    skill: diff,
+    lives: hearts,
+    result: won ? "win" : "fail",
+    pipes: totalPassed,
+    time: secs,
+    ts: Date.now()
+  };
+}
+function scoreCardHTML(e){
+  const skill = e.skill.charAt(0).toUpperCase() + e.skill.slice(1);
+  const res = e.result === "win" ? '<b class="b-win">WIN 🏆</b>' : '<b class="b-fail">FAIL 💥</b>';
+  return '<div class="score-row"><span>Skill</span><b>' + skill + '</b></div>'
+       + '<div class="score-row"><span>Lives left</span><b>' + e.lives + ' / ' + MAX_HEARTS + ' ♥</b></div>'
+       + '<div class="score-row"><span>Gift stacks</span><b>' + e.pipes + '</b></div>'
+       + '<div class="score-row"><span>Time</span><b>' + e.time + 's</b></div>'
+       + '<div class="score-row"><span>Result</span>' + res + '</div>';
+}
+function lbRowHTML(e, rank){
+  const skill = e.skill ? (e.skill.charAt(0).toUpperCase() + e.skill.slice(1)) : "—";
+  const medal = rank === 0 ? "🥇" : rank === 1 ? "🥈" : rank === 2 ? "🥉" : (rank + 1);
+  const bad = e.result === "win"
+    ? '<span class="bdg bdg-win">WIN</span>'
+    : '<span class="bdg bdg-fail">FAIL</span>';
+  return '<div class="lb-row' + (e.mine ? " me" : "") + '">'
+    + '<span class="lb-rank">' + medal + '</span>'
+    + '<span class="lb-main"><span class="lb-name">' + escapeHtml(e.name || "Ken") + (e.mine ? '<small>(you)</small>' : '') + '</span>'
+    + '<span class="lb-sub">' + (e.time || "?") + 's &middot; ' + e.pipes + ' stacks</span></span>'
+    + '<span class="lb-badges">' + bad + '<span class="bdg bdg-skill">' + skill + '</span><span class="bdg bdg-lives">♥' + (e.lives != null ? e.lives : "?") + '</span></span>'
+    + '</div>';
+}
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+/* ---- leaderboard UI: open / render / save ---- */
+
+async function lbRender(mineTs){
+  $lbList.innerHTML = '<p class="lb-empty">Loading…</p>';
+  let arr;
+  if(LB_ENABLED){
+    try{
+      arr = await lbFetch();
+      $lbSrc.textContent = "shared";
+      $lbSrc.style.background = "#e7f7ee"; $lbSrc.style.color = "#1d8a4e";
+      $lbNote.textContent = "";
+    }catch(e){
+      // shared failed -> fall back to this device so the board still shows something
+      arr = lbLocalRead();
+      $lbSrc.textContent = "this device";
+      $lbSrc.style.background = "#fff3df"; $lbSrc.style.color = "#9a825f";
+      $lbNote.textContent = "Shared board unreachable — showing this device's scores.";
+    }
+  }else{
+    arr = lbLocalRead();
+    $lbSrc.textContent = "this device";
+    $lbSrc.style.background = "#fff3df"; $lbSrc.style.color = "#9a825f";
+    $lbNote.textContent = "Scores are stored on this phone only.";
+  }
+  const sorted = lbSort(arr);
+  if(!sorted.length){ $lbList.innerHTML = '<p class="lb-empty">No scores yet — be the first to play!</p>'; return; }
+  $lbList.innerHTML = sorted.map((e, i) => {
+    if(mineTs && e.ts === mineTs) e.mine = true;
+    return lbRowHTML(e, i);
+  }).join("");
+}
+
+function openLeaderboard(){
+  $lb.classList.remove("hidden");
+  lbRender();
+}
+
+async function saveScore(nameInput, btn, won){
+  if(!lastResult) return;
+  if(btn.disabled) return;
+  const name = (nameInput ? nameInput.value : "").toString().trim() || "Ken";
+  const entry = Object.assign({}, lastResult, { name: name.slice(0, 18) });
+  // remember the name for next time (this device)
+  try{ localStorage.setItem("kbigday_lastname", entry.name); }catch(e){}
+
+  btn.disabled = true;
+  const oldLabel = btn.textContent;
+  btn.textContent = "Saving…";
+
+  let sharedOk = false;
+  if(LB_ENABLED){
+    try{ await lbPush(entry); sharedOk = true; }catch(e){ /* fall through to local */ }
+  }
+  // Always mirror to localStorage (survives offline + is the fallback board)
+  const local = lbLocalRead();
+  local.push(entry);
+  lbLocalWrite(local);
+
+  const myTs = entry.ts;
+  btn.textContent = "Saved ✓";
+  showToast("Score saved — " + entry.name + "! 🏆");
+  // reflect it on the board right away (open it so the player sees their name)
+  await lbRender(myTs);
+  $lb.classList.remove("hidden");
+  // brief "saved" state, then re-enable so they can keep playing without re-saving
+  setTimeout(() => { btn.disabled = false; btn.textContent = oldLabel; }, 1200);
+}
+
 /* ============================== state ============================== */
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
@@ -235,6 +466,8 @@ const $ = id => document.getElementById(id);
 const $menu = $("menu"), $crash = $("crash"), $win = $("win");
 const $toast = $("toast"), $winStats = $("winStats");
 const $hudLegIco = $("hudLegIco"), $hudProgress = $("hudProgress"), $hudHearts = $("hudHearts");
+const $lb = $("lb"), $lbList = $("lbList"), $lbSrc = $("lbSrc"), $lbNote = $("lbNote");
+const $winName = $("winName"), $crashName = $("crashName");
 
 let state = "menu";            // menu | playing | crashed | won
 let diff = "easy";
@@ -283,6 +516,7 @@ function startRun(d){
   $menu.classList.add("hidden");
   $crash.classList.add("hidden");
   $win.classList.add("hidden");
+  $("lb").classList.add("hidden");
   state = "playing";
   updateHud();
 }
@@ -299,6 +533,7 @@ window.__cfg = () => LEVELS[diff];
 window.__step = (dt) => { update(dt); checkCollisions(); };
 window.__setY = (y) => { player.y = y; player.vy = 0; };
 window.__noHit = () => { invulnUntil = performance.now() + 1e9; };
+window.__endInvuln = () => { invulnUntil = 0; };   // test hook: allow hits
 window.__totalPassed = () => totalPassed;
 window.__gaps = () => pipes.map(p => ({ x: p.x, gapY: p.gapY, passed: p.passed, special: !!p.special, leg: p.legAtSpawn, seq: p.seq }));
 window.iconVisible = iconVisible;
@@ -329,11 +564,20 @@ function win(){
   state = "won";
   const secs = Math.max(1, Math.round((performance.now() - runStartAt) / 1000));
   $winStats.textContent = diff + " mode · " + totalPassed + " gift stacks cleared · " + secs + "s — Chloe and the RV thank you!";
+  lastResult = makeEntry(lastNameSuggest(), true);
+  paintScoreCard("winCard", lastResult);
+  $winName.value = lastNameSuggest();
   $win.classList.remove("hidden");
   burstConfetti();
   updateHud();
   beep(523, .12); setTimeout(() => beep(659, .12), 120); setTimeout(() => beep(784, .18), 240);
 }
+
+function lastNameSuggest(){
+  try{ return localStorage.getItem("kbigday_lastname") || ""; }catch(e){ return ""; }
+}
+function paintScoreCard(id, e){ $(id).innerHTML = scoreCardHTML(e); }
+let lastResult = null;
 
 /* ============================== game logic ============================== */
 function flap(){
@@ -405,6 +649,9 @@ function hit(force){
   updateHud();
   if(hearts <= 0){
     state = "crashed";
+    lastResult = makeEntry(lastNameSuggest(), false);
+    paintScoreCard("crashCard", lastResult);
+    const ci = $("crashName"); if(ci) ci.value = lastNameSuggest();
     $crash.classList.remove("hidden");
     beep(180, .2); setTimeout(() => beep(120, .3), 160);
   }else{
@@ -618,6 +865,23 @@ $("retryBtn").addEventListener("click", () => startRun(diff));
 $("replayBtn").addEventListener("click", () => startRun(diff));
 $("changeBtn").addEventListener("click", toMenu);
 $("menuBtn").addEventListener("click", toMenu);
+
+/* leaderboard */
+$("lbBtn").addEventListener("click", openLeaderboard);
+$("lbClose").addEventListener("click", () => { $lb.classList.add("hidden"); if(state !== "playing") toMenu(); });
+$("lbRefresh").addEventListener("click", () => lbRender());
+$("lbPlay").addEventListener("click", () => startRun(diff));
+$("winSave").addEventListener("click", (e) => saveScore($("winName"), e.currentTarget, true));
+$("crashSave").addEventListener("click", (e) => saveScore($("crashName"), e.currentTarget, false));
+// Enter in the name box = save
+["winName", "crashName"].forEach((id, i) => {
+  $(id).addEventListener("keydown", (ev) => {
+    if(ev.key === "Enter"){
+      ev.preventDefault();
+      saveScore($(id), $(i === 0 ? "winSave" : "crashSave"), i === 0);
+    }
+  });
+});
 
 canvas.addEventListener("pointerdown", (e) => {
   e.preventDefault();
